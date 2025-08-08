@@ -8,6 +8,16 @@ from pydantic import BaseModel, Field
 #     text: str = "Simple text"
 
 class Message(BaseModel):
-    id: int
+    id: int = None
     text: str 
 
+    model_config = {
+        "json_schema_extra": {
+            "examples":
+                [
+                    {
+                        "text": "Simple message",
+                    }
+                ]
+        }
+    }
