@@ -1,14 +1,20 @@
-from fastapi import FastAPI, status, Body, HTTPException
+from fastapi import FastAPI, Request, status, Body, HTTPException
 from uvicorn import run
 from schemas import Message
 from typing import List
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+
 app = FastAPI()
+templates =  Jinja2Templates(directory="templates")
 
 messages_db = []
 
 @app.get("/")
-async def get_all_messages() -> List[Message]:
-    return messages_db
+async def get_all_messages(request: Request) -> List[Message]:
+    # return messages_db
+    return templates.TemplateResponse("message.html",
+            {"request": request, "messages": messages_db})
 
 
 @app.get("/message/{message_id}")
