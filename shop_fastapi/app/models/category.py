@@ -15,3 +15,6 @@ class Category(Base):
                        nullable=True)
 
     products = relationship('Product', back_populates='category')
+
+    # def __repr__(self):
+    #     return f"Category(id={self.id}, name='{self.name}', slug='{self.slug}')"
