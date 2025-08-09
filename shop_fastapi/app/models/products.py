@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 class Product(Base):
     __tablename__ = 'products'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String)
     slug = Column(String, unique=True, index=True)
     description = Column(String)

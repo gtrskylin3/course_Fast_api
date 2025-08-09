@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class CreateProduct(BaseModel):
     name: str
@@ -8,7 +8,8 @@ class CreateProduct(BaseModel):
     stock: int
     category: int
 
+
+from typing import Optional
 class CreateCategory(BaseModel):
     name: str
-    parent_id: int | None
-
+    parent_id: Optional[int]
