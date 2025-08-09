@@ -13,3 +13,10 @@ from typing import Optional
 class CreateCategory(BaseModel):
     name: str
     parent_id: Optional[int]
+
+class CreateUser(BaseModel):
+    first_name: str
+    last_name: str
+    username: str
+    email: str
+    password: str
