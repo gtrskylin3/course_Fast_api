@@ -1,7 +1,8 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
-from typing import Optional
 from app.backend.db import Base
+from app.models import *
+
 
 class Category(Base):
     __tablename__ = 'categories'
@@ -10,6 +11,7 @@ class Category(Base):
     name = Column(String)
     slug = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
+    parent_id = Column(Integer, ForeignKey('categories.id'),
+                       nullable=True)
 
-from sqlalchemy.schema import CreateTable
-print(CreateTable(Category.__table__))
+    products = relationship('Product', back_populates='category')

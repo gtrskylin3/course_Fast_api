@@ -1,7 +1,7 @@
 from app.backend.db import Base
+from app.models import *
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Float
 from sqlalchemy.orm import relationship
-
 
 class Product(Base):
     __tablename__ = 'products'
@@ -13,16 +13,8 @@ class Product(Base):
     price = Column(Integer)
     image_url = Column(String)
     stock = Column(Integer)
+    categories_id = Column(Integer, ForeignKey('categories.id'))
     rating = Column(Float)
     is_active = Column(Boolean, default=True)
 
-
-
-# class User(Base):
-#     __tablename__ = "user"
-
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     name: Mapped[str] = mapped_column(String(50))
-#     fullname: Mapped[Optional[str]]
-#     nickname: Mapped[Optional[str]] = mapped_column(String(30))
-
+    category = relationship('Category', back_populates='products')
