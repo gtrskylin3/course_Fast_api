@@ -1,2 +1,3 @@
 venv/
 __pycache__/
+shop_fastapi/app/config.py
