@@ -11,7 +11,7 @@ from app.config import settings
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -45,6 +45,47 @@ async def create_access_token(
     expires = datetime.now() + expires_delta
     encode.update({"exp": expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        user_id: int = payload.get("id")
+        is_admin: str = payload.get("is_admin")
+        is_supplier: str = payload.get("is_supplier")
+        is_customer: str = payload.get("is_customer")
+        expire = payload.get("exp")
+        if username is None or user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate user",
+            )
+        if expire is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No access token supplied",
+            )
+        if datetime.now() > datetime.fromtimestamp(expire):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Token expired!"
+            )
+        return {
+            "username": username,
+            "id": user_id,
+            "is_admin": is_admin,
+            "is_supplier": is_supplier,
+            "is_customer": is_customer,
+        }
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user"
+        )
+
+# get_current_user() должен быть внедрен в каждую реализацию сервиса,
+# чтобы ограничить доступ пользователей. Но на этот раз метод 
+# не только проверит учетные данные,
+# но и выполнит декодирование полезной нагрузки JWT.
 
 
 async def authenticate_user(db: session, username: str, password: str):
@@ -87,8 +128,8 @@ async def login(
 
 
 @router.get("/read_current_user")
-async def read_current_user(user: User = Depends(oauth2_scheme)):
-    return user
+async def read_current_user(user: User = Depends(get_current_user)):
+    return {'User': user}
 
 
 @router.post("/")
