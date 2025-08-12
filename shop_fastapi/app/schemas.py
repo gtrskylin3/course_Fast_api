@@ -20,3 +20,8 @@ class CreateUser(BaseModel):
     username: str
     email: str
     password: str
+
+class CreateReviewWithRating(BaseModel):
+    product_id: int
+    comment: str = Field(max_length=200, description='Текст отзыва')
+    grade: int = Field(gt=0, le=5, description='Оценка от 1 до 5')
